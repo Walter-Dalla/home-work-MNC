@@ -82,6 +82,8 @@ float Determinante(int matrixSize, float**matrix) {
         subDet = Determinante(newMatrixSize, newMatrix);
 
         det += subDet * matrix[indexK][0] *  pow(-1, indexK);
+
+        free(newMatrix);
     }
 
     return det;
@@ -127,8 +129,8 @@ void GaussCompacto(int systemOrder, float **matrixCoeficiente, float* vetorIndep
         }
     }
 
-
     int i, j;
+
     float **solv = (float **)malloc((systemOrder) * sizeof(float *));
     createMatrixFloat(solv, systemOrder, systemOrder + 1);
 
@@ -169,6 +171,9 @@ void GaussCompacto(int systemOrder, float **matrixCoeficiente, float* vetorIndep
         }
         vetorSolucao[i] = sum / solv[i][i];
     }
+
+    free(solv);
+    free(matrixPlus);
 }
 
 
@@ -210,6 +215,8 @@ void MatrizInversa(int systemOrder, float **matriz, float** matrizInversa){
             matrizInversa[col][row] = vetorInversaAux[col];
         }
     }
+
+    free(identidade);
 }
 
 
@@ -240,5 +247,8 @@ void main() {
     MatrizInversa(matrixSize, matrix, matrizInversa);
 
     printMatrixFloat(matrizInversa, matrixSize, matrixSize);
+
+    free(matrix);
+    free(matrizInversa);
 
 }
