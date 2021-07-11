@@ -130,7 +130,7 @@ float nextL(int i, int j, float** matrix, float** solv){
 void GaussCompacto(int systemOrder, int **matrixCoeficiente, float* vetorIndependente, float* vetorSolucao){
     int index;
 
-
+    // Criterio de parada
     for (index = 1; index <= systemOrder; index++)
     {
         int det = Determinante(index, matrixCoeficiente);
@@ -143,24 +143,23 @@ void GaussCompacto(int systemOrder, int **matrixCoeficiente, float* vetorIndepen
 
     int i, j;
     float **solv = (float **)malloc((systemOrder) * sizeof(float *));
-    createMatrixFloat(solv, systemOrder, systemOrder+1);
+    createMatrixFloat(solv, systemOrder, systemOrder + 1);
 
     float **matrixPlus = (float **)malloc((systemOrder) * sizeof(float *));
-    createMatrixFloat(solv, systemOrder, systemOrder+1);
+    createMatrixFloat(matrixPlus, systemOrder, systemOrder + 1);
 
 
-    // create matrix ampliada
+    // criar matrix ampliada e popular
     for (i = 0; i < systemOrder; i++)
     {
         for (j = 0; j < systemOrder; j++)
         {
-        printf("%i - ", matrixCoeficiente[i][j] ); 
             matrixPlus[i][j] = matrixCoeficiente[i][j];
         }
         matrixPlus[i][systemOrder] = vetorIndependente[i];
     }
     
-
+    // Popular matriz solucão intermediaria
     for(i = 0; i < systemOrder; i++) {
         for(j = 0; j < systemOrder + 1; j++) {
             if(i > j){
@@ -171,31 +170,18 @@ void GaussCompacto(int systemOrder, int **matrixCoeficiente, float* vetorIndepen
             }
         }
     }
-
-    printf("hellow2");
     
-    int p;
-    for (p = systemOrder - 1; p > 0; p--)
+    // calcular vetor de solução
+    for (i = systemOrder - 1; i >= 0; i--)
     {
-        float sum = 0;
-        for(j = 0; j < systemOrder; j++) {
-            if((i > j)){
-                sum = vetorIndependente[j] / (float) matrixPlus[p][j];
-                
-                printf("%.1f/%.1i = %.f\n", vetorIndependente[j], matrixPlus[p][j], sum);
+        float sum = solv[i][systemOrder];
+        for(j = systemOrder -1; j >= 0; j--) {
+            if(!(i > j)){
+                sum -= vetorSolucao[j] * solv[i][j];
             }
         }
-        vetorSolucao[j -1] = sum;
+        vetorSolucao[i] = sum / solv[i][i];
     }
-    
-
-
-    printMatrixFloat(solv, systemOrder, systemOrder);
-
-    for(j = 0; j < systemOrder; j++) {
-        printf("%f", vetorSolucao[j]);
-    }
-
 }
 
 
