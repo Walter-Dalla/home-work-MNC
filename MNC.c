@@ -50,11 +50,13 @@ void createMatrixFloat(float **matrix, int colSize, int rowSize) {
 }
 
 //Exercicio 1
-int Determinante(int matrixSize, float**matrix) {
-    int col, row, newMatrixCol, newMatrixRow, indexK, det = 0, subDet = 0;
+float Determinante(int matrixSize, float**matrix) {
+    int col, row, newMatrixCol, newMatrixRow, indexK;
+    float det = 0, subDet = 0;
     if(matrixSize == 1){
         return matrix[0][0];
     }
+
     if(matrixSize == 2){
         return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
     }
@@ -84,7 +86,6 @@ int Determinante(int matrixSize, float**matrix) {
 
     return det;
 }
-
 
 
 float nextU(int i, int j, float** matrix, float** solv){
@@ -120,7 +121,7 @@ void GaussCompacto(int systemOrder, float **matrixCoeficiente, float* vetorIndep
     // Criterio de parada
     for (index = 1; index <= systemOrder; index++)
     {
-        int det = Determinante(index, matrixCoeficiente);
+        float det = Determinante(index, matrixCoeficiente);
         if(det == 0){
             return;
         }
@@ -173,8 +174,16 @@ void GaussCompacto(int systemOrder, float **matrixCoeficiente, float* vetorIndep
 
 //Exercicio 10
 void MatrizInversa(int systemOrder, float **matriz, float** matrizInversa){
+    float determinante = Determinante(systemOrder, matriz);
+
+    if(determinante == 0) {
+        return;
+    }
+
     int col, row;
     float** identidade = (float **)malloc((systemOrder) * sizeof(float *));
+
+
     createMatrixFloat(identidade, systemOrder, systemOrder);
 
     for (row = 0; row < systemOrder; row++)
@@ -195,7 +204,6 @@ void MatrizInversa(int systemOrder, float **matriz, float** matrizInversa){
         float* vetorInversaAux = malloc((systemOrder) * sizeof(float *));
         clearArray(vetorInversaAux, systemOrder);
         
-
         GaussCompacto(systemOrder, matriz, identidade[row], vetorInversaAux);
         for (col = 0; col < systemOrder; col++)
         {
