@@ -2,16 +2,12 @@
 #include <stdlib.h>
 #include <math.h>
 
-void printMatrix(int** matrix, int colSize, int rowSize) {
-    int col, row;
 
-    for (col = 0; col < colSize; col++)
+void clearArray(float* vector, int size) {
+    int index;
+    for (index = 0; index < size; index++)
     {
-        for (row = 0; row < rowSize; row++)
-        {
-            printf("%i ", matrix[col][row]);
-        }
-        printf("\n");
+        vector[index] = 0;
     }
 }
 
@@ -28,27 +24,18 @@ void printMatrixFloat(float** matrix, int colSize, int rowSize) {
     }
 }
 
-void createMatrix(int **matrix, int colSize, int rowSize) {
-    int col, row, defaultValue = 0;
-
-    // matrix = (int **)malloc(colSize * sizeof(int *));
-    for (row = 0; row < rowSize; row++) {
-        matrix[row] = (int *)malloc(rowSize * sizeof(int));
-    }
+void printVectorFloat(float* vector, int colSize) {
+    int col;
 
     for (col = 0; col < colSize; col++)
     {
-        for (row = 0; row < rowSize; row++)
-        {
-            matrix[col][row] = defaultValue;
-        }
+        printf("%.2f\n", vector[col]);
     }
 }
 
 void createMatrixFloat(float **matrix, int colSize, int rowSize) {
     int col, row, defaultValue = 0;
 
-    // matrix = (int **)malloc(colSize * sizeof(int *));
     for (row = 0; row < rowSize; row++) {
         matrix[row] = (float *)malloc(rowSize * sizeof(float));
     }
@@ -63,7 +50,7 @@ void createMatrixFloat(float **matrix, int colSize, int rowSize) {
 }
 
 //Exercicio 1
-int Determinante(int matrixSize, int**matrix) {
+int Determinante(int matrixSize, float**matrix) {
     int col, row, newMatrixCol, newMatrixRow, indexK, det = 0, subDet = 0;
     if(matrixSize == 1){
         return matrix[0][0];
@@ -74,8 +61,8 @@ int Determinante(int matrixSize, int**matrix) {
 
     for (indexK = 0; indexK < matrixSize; indexK++){
         int newMatrixSize = matrixSize - 1;
-        int **newMatrix = (int **) malloc(newMatrixSize * sizeof(int *));
-        createMatrix(newMatrix, newMatrixSize, newMatrixSize);
+        float **newMatrix = (float **) malloc(newMatrixSize * sizeof(float *));
+        createMatrixFloat(newMatrix, newMatrixSize, newMatrixSize);
 
         for (col = 0, newMatrixCol = 0; col < matrixSize; col++)
         {
@@ -92,7 +79,7 @@ int Determinante(int matrixSize, int**matrix) {
         }
         subDet = Determinante(newMatrixSize, newMatrix);
 
-        det += subDet * matrix[indexK][0] *  (int) pow(-1, indexK);
+        det += subDet * matrix[indexK][0] *  pow(-1, indexK);
     }
 
     return det;
@@ -127,7 +114,7 @@ float nextL(int i, int j, float** matrix, float** solv){
 }
 
 //Exercicio 6
-void GaussCompacto(int systemOrder, int **matrixCoeficiente, float* vetorIndependente, float* vetorSolucao){
+void GaussCompacto(int systemOrder, float **matrixCoeficiente, float* vetorIndependente, float* vetorSolucao){
     int index;
 
     // Criterio de parada
@@ -137,7 +124,6 @@ void GaussCompacto(int systemOrder, int **matrixCoeficiente, float* vetorIndepen
         if(det == 0){
             return;
         }
-        printf("sub dets = %i\n", det);
     }
 
 
@@ -186,15 +172,50 @@ void GaussCompacto(int systemOrder, int **matrixCoeficiente, float* vetorIndepen
 
 
 //Exercicio 10
+void MatrizInversa(int systemOrder, float **matriz, float** matrizInversa){
+    int col, row;
+    float** identidade = (float **)malloc((systemOrder) * sizeof(float *));
+    createMatrixFloat(identidade, systemOrder, systemOrder);
+
+    for (row = 0; row < systemOrder; row++)
+    {
+        for (col = 0; col < systemOrder; col++)
+        {
+            if(col == row){
+                identidade[row][col] = 1;
+            }
+            else {
+                identidade[row][col] = 0;
+            }
+        }
+    }
+    
+    for (row = 0; row < systemOrder; row++)
+    {
+        float* vetorInversaAux = malloc((systemOrder) * sizeof(float *));
+        clearArray(vetorInversaAux, systemOrder);
+        
+
+        GaussCompacto(systemOrder, matriz, identidade[row], vetorInversaAux);
+        for (col = 0; col < systemOrder; col++)
+        {
+            matrizInversa[col][row] = vetorInversaAux[col];
+        }
+    }
+}
+
 
 
 void main() {
     int matrixSize = 3;
     int col, row, index = 0, input;
 
-    int **matrix = (int **)malloc(matrixSize * sizeof(int *));
-    createMatrix(matrix, matrixSize, matrixSize);
-    
+    float **matrix = (float **)malloc(matrixSize * sizeof(float *));
+    createMatrixFloat(matrix, matrixSize, matrixSize);
+
+    float** matrizInversa = (float **)malloc(matrixSize * sizeof(float *));
+    createMatrixFloat(matrizInversa, matrixSize, matrixSize);
+
     for (col = 0; col < matrixSize; col++)
     {
         for (row = 0; row < matrixSize; row++)
@@ -208,9 +229,8 @@ void main() {
 
     GaussCompacto(matrixSize, matrix, vet, solucao);
 
-    // printMatrix(matrix, matrixSize, matrixSize);
-    // int det = Determinante(matrixSize, matrix);
-    // printf("\nResultado = %i\n", det);
-    // printMatrix(matrix, matrixSize, matrixSize);
+    MatrizInversa(matrixSize, matrix, matrizInversa);
+
+    printMatrixFloat(matrizInversa, matrixSize, matrixSize);
 
 }
