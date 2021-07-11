@@ -100,7 +100,7 @@ int Determinante(int matrixSize, int**matrix) {
 
 
 
-float nextU(int i, int j, int** matrix, float** solv){
+float nextU(int i, int j, float** matrix, float** solv){
     float a = matrix[i][j];
 
     float sum = 0;
@@ -113,7 +113,7 @@ float nextU(int i, int j, int** matrix, float** solv){
     return a - sum;
 }
 
-float nextL(int i, int j, int** matrix, float** solv){
+float nextL(int i, int j, float** matrix, float** solv){
     int a = matrix[i][j];
 
     int sum = 0;
@@ -127,8 +127,9 @@ float nextL(int i, int j, int** matrix, float** solv){
 }
 
 //Exercicio 6
-void GaussCompacto(int systemOrder, int **matrixCoeficiente, int* vetorIndependente, int* vetorSolucao){
+void GaussCompacto(int systemOrder, int **matrixCoeficiente, float* vetorIndependente, float* vetorSolucao){
     int index;
+
 
     for (index = 1; index <= systemOrder; index++)
     {
@@ -138,22 +139,62 @@ void GaussCompacto(int systemOrder, int **matrixCoeficiente, int* vetorIndepende
         }
         printf("sub dets = %i\n", det);
     }
+
+
     int i, j;
-    float **solv = (float **)malloc(systemOrder * sizeof(float *));
-    createMatrixFloat(solv, systemOrder, systemOrder);
+    float **solv = (float **)malloc((systemOrder) * sizeof(float *));
+    createMatrixFloat(solv, systemOrder, systemOrder+1);
+
+    float **matrixPlus = (float **)malloc((systemOrder) * sizeof(float *));
+    createMatrixFloat(solv, systemOrder, systemOrder+1);
+
+
+    // create matrix ampliada
+    for (i = 0; i < systemOrder; i++)
+    {
+        for (j = 0; j < systemOrder; j++)
+        {
+        printf("%i - ", matrixCoeficiente[i][j] ); 
+            matrixPlus[i][j] = matrixCoeficiente[i][j];
+        }
+        matrixPlus[i][systemOrder] = vetorIndependente[i];
+    }
+    
 
     for(i = 0; i < systemOrder; i++) {
-        for(j = 0; j < systemOrder; j++) {
+        for(j = 0; j < systemOrder + 1; j++) {
             if(i > j){
-                solv[i][j] = nextL(i, j, matrixCoeficiente, solv);
+                solv[i][j] = nextL(i, j, matrixPlus, solv);
             }
             else {
-                solv[i][j] = nextU(i, j, matrixCoeficiente, solv);
+                solv[i][j] = nextU(i, j, matrixPlus, solv);
             }
         }
     }
 
+    printf("hellow2");
+    
+    int p;
+    for (p = systemOrder - 1; p > 0; p--)
+    {
+        float sum = 0;
+        for(j = 0; j < systemOrder; j++) {
+            if((i > j)){
+                sum = vetorIndependente[j] / (float) matrixPlus[p][j];
+                
+                printf("%.1f/%.1i = %.f\n", vetorIndependente[j], matrixPlus[p][j], sum);
+            }
+        }
+        vetorSolucao[j -1] = sum;
+    }
+    
+
+
     printMatrixFloat(solv, systemOrder, systemOrder);
+
+    for(j = 0; j < systemOrder; j++) {
+        printf("%f", vetorSolucao[j]);
+    }
 
 }
 
@@ -176,8 +217,8 @@ void main() {
             matrix[col][row] = input;
         }
     }
-    int *vet;
-    int *solucao;
+    float vet[] = {6.0, 3.0, 3.0};
+    float *solucao = malloc(matrixSize * sizeof(float *));;
 
     GaussCompacto(matrixSize, matrix, vet, solucao);
 
