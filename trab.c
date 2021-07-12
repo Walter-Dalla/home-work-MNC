@@ -529,7 +529,6 @@ void op5() {
 void op6() {
     int matrixSize;
     getMatrixSimetricSize(&matrixSize);
-    printf("%i\n\n", matrixSize);
     
     float** matrix = (float **)malloc(matrixSize * sizeof(float *));
     createMatrix(matrix, matrixSize, matrixSize);
