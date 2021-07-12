@@ -869,11 +869,11 @@ void op1() {
 }
 
 void op2() {
-    
+    SistemaTrianguloInferior();
 }
 
 void op3() {
-
+    SistemaTrianguloSuperior();
 }
 
 void op4() {
@@ -1020,7 +1020,7 @@ void op8() {
 	realizarSolucao(km, e, Col, Lin, Matriz, Inicial, Termos);
 }
 void op9() {
-
+    GaussSeidel();
 }
 void op10() {
     int matrixSize;
