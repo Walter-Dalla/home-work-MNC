@@ -305,7 +305,7 @@ void Cholesky(int ordem, float **matriz, float *vetorIndependente) {
                 } else if (j == 0) {
                     novaMatriz[i][j] = matriz[i][j] / novaMatriz[j][j];
                 } else if (j == i) {
-                    // Somatório
+                    // SomatÃ³rio
                     k = 0;
                     if(i - 1 > k) {  // 2 > 0 
                         for(k = 0; k <= i - 1; k++) { // k < 2
@@ -355,6 +355,42 @@ void Cholesky(int ordem, float **matriz, float *vetorIndependente) {
 	  	printf("Vetor [%d] = %.0f\n", i, vetorIndependente[i]);
 	}
     
+}
+
+int CriterioLinhas(int ordem, float** matriz){
+    int i,j,soma;
+    float resultado[ordem];
+    for (i = 0; i < ordem; i++)
+    {
+        soma = 0;
+        for (j = 0; j < ordem; j++)
+        {
+            if (j != i)
+            {
+                soma += fabs(matriz[i][j]);
+            }
+        }
+        resultado[i] = soma / matriz[i][i];
+    }
+
+    float maiorResultado = 0;
+
+    for (i = 0; i < ordem; i++)
+    {
+        if (fabs(resultado[i]) > maiorResultado)
+        {
+            maiorResultado = resultado[i];
+        }
+    }
+
+    if (maiorResultado < 1)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 
@@ -423,8 +459,8 @@ void Gauss(int ordem, float **matriz, float *vetorIndependente) {
 
     printf("\nMatriz na sua forma final\n");
 
-    for(int i = 0; i < ordem; i++) {
-        for(int j = 0; j <= ordem ; j++) {
+    for(i = 0; i < ordem; i++) {
+        for(j = 0; j <= ordem ; j++) {
             printf("%.1f\t", matrizAmpliada[i][j]);
         }
         printf("\n");
@@ -475,11 +511,11 @@ float validarConvergencia(int Lin, int Col, float ** Matriz){
         denominador[i] = 0;
 	}	
 	
-	//Separa��o da diagonal dos valores
+	//Separaï¿½ï¿½o da diagonal dos valores
 	for(i = 0; i < Lin; i++){
 		for(c = 0; c < Col; c++){
 			if(i == c){
-				denominador[i] = MatrizAb[i][c]; //Separa��o da diagonal dos valores
+				denominador[i] = MatrizAb[i][c]; //Separaï¿½ï¿½o da diagonal dos valores
 			}
 			else {		
 				numerador[i] += MatrizAb[i][c]; //Soma dos valores fora da diagonal
@@ -489,7 +525,7 @@ float validarConvergencia(int Lin, int Col, float ** Matriz){
 	
 	float convergencia_l[i], convergencia_c[i];
 
-	//Divis�o
+	//Divisï¿½o
 	for(i = 0; i < Lin; i++){
 		convergencia_l[i] = numerador[i]/denominador[i];
 	}
@@ -508,7 +544,7 @@ float validarConvergencia(int Lin, int Col, float ** Matriz){
 			for(i = 0; i < Lin; i++){
 				for(c = 0; c < Col; c++){
 					if(i == c){
-						denominador[i] = MatrizAb[c][i]; //Separa��o da diagonal dos valores
+						denominador[i] = MatrizAb[c][i]; //Separaï¿½ï¿½o da diagonal dos valores
 					}
 					else {		
 						numerador[i] += MatrizAb[c][i]; //Soma dos valores fora da diagonal
@@ -553,13 +589,13 @@ float realizarSolucao(int km, float e, int Col, int Lin, float **Matriz, float *
 					denominador_r[i] = Matriz[i][c];
 				}
 				else {		
-					numerador_r[i] -= (Matriz[i][c]*Inicial[c]); //Inser��o dos termos iniciais no sistema
+					numerador_r[i] -= (Matriz[i][c]*Inicial[c]); //Inserï¿½ï¿½o dos termos iniciais no sistema
 				}
 			}
 		}
         
 		for(i = 0; i < Lin; i++){
-			resultado_r[i] = (numerador_r[i] + Termos[i])/denominador_r[i]; //Resultado da intera��o
+			resultado_r[i] = (numerador_r[i] + Termos[i])/denominador_r[i]; //Resultado da interaï¿½ï¿½o
 			numerador_r[i] = resultado_r[i];
 			float aux =  sqrt(pow(resultado_r[i] - Inicial[i],2 ));
             if(i == 0 || aux > numerador_f){
@@ -615,7 +651,7 @@ void GaussCompacto(int systemOrder, float **matrixCoeficiente, float* vetorIndep
         matrixPlus[i][systemOrder] = vetorIndependente[i];
     }
     
-    // Popular matriz solucão intermediaria
+    // Popular matriz solucÃ£o intermediaria
     for(i = 0; i < systemOrder; i++) {
         for(j = 0; j < systemOrder + 1; j++) {
             if(i > j){
@@ -627,7 +663,7 @@ void GaussCompacto(int systemOrder, float **matrixCoeficiente, float* vetorIndep
         }
     }
     
-    // calcular vetor de solução
+    // calcular vetor de soluÃ§Ã£o
     for (i = systemOrder - 1; i >= 0; i--)
     {
         float sum = solv[i][systemOrder];
@@ -668,11 +704,11 @@ int CriterioSassenfeld(int ordem, float** matriz)
             {
                 if (j < i)
                 {
-                    soma += fabs(matriz[i][j]) * B[j];
+                    soma += (float) fabs(matriz[i][j]) * B[j];
                 }
                 else
                 {
-                    soma += fabs(matriz[i][j]);
+                    soma += (float) fabs(matriz[i][j]);
                 }
             }
         }
@@ -683,7 +719,7 @@ int CriterioSassenfeld(int ordem, float** matriz)
 
     for (i = 0; i < ordem; i++)
     {
-        if (fabs(B[i]) > maiorB)
+        if ((float) fabs(B[i]) > maiorB)
         {
             maiorB = B[i];
         }
@@ -704,7 +740,7 @@ void GaussSeidel()
     int ordem;
     int i, j, maxIteracao;
     float precisao;
-    int continua, iteracoes = 0;
+    int continua=1, iteracoes = 0;
 
 
 
@@ -720,7 +756,8 @@ void GaussSeidel()
     float matrizAnterior[ordem];
     float aproxSolucao[ordem];
 
-    printf("\ninsira os termos da aprox solucao: \n");
+    printf("\nInsira os termos de aproximação inicial para solução: \n");
+
     for (i = 0; i < ordem; i++)
     {
         printf("[%d]: ", i);
@@ -728,87 +765,85 @@ void GaussSeidel()
     }
 
 
-    printf("insira o valor da precisão: ");
+    printf("\nInsira o valor da precisão: ");
     scanf("%f",&precisao);
-    printf("insira o valor máximo de iterações: ");
+    printf("\nInsira o valor máximo de iterações: ");
     scanf("%d",&maxIteracao);
 
-    if (CriterioSassenfeld(ordem, matriz) == 0)
+    if (CriterioSassenfeld(ordem, matriz) == 0 && CriterioLinhas(ordem, matriz) == 0)
     {
-        printf("nao cumpre Sassenfeld\n\n");
-    }
-    else
-    {
-        printf("cumpre Sassenfeld\n\n");
+        printf("\n\nA matriz inserida não cumpre nenhum critério que garante convergência\n\n");
+        continua = 0;
     }
 
-    do
-    {
-        iteracoes++;
-
-        for (i = 0; i < ordem; i++)
+    if (continua!=0){
+        do
         {
-            matrizAnterior[i] = aproxSolucao[i];
-        }
+            iteracoes++;
 
-        for (i = 0; i < ordem; i++)
-        {
-            float resultado = 0;
-            for (j = 0; j < ordem; j++)
+            for (i = 0; i < ordem; i++)
             {
-                if (j != i)
+                matrizAnterior[i] = aproxSolucao[i];
+            }
+
+            for (i = 0; i < ordem; i++)
+            {
+                float resultado = 0;
+                for (j = 0; j < ordem; j++)
                 {
-                    resultado += matriz[i][j] * aproxSolucao[j];
+                    if (j != i)
+                    {
+                        resultado += matriz[i][j] * aproxSolucao[j];
+                    }
+                }
+                aproxSolucao[i] = ((termosInd[i] - resultado) / matriz[i][i]);
+            }
+
+            float maioraproxSolucao = 0;
+
+            //pega o maior
+            for (i = 0; i < ordem; i++)
+            {
+                if (fabs(aproxSolucao[i]) > maioraproxSolucao)
+                {
+                    maioraproxSolucao = aproxSolucao[i];
                 }
             }
-            aproxSolucao[i] = ((termosInd[i] - resultado) / matriz[i][i]);
-        }
 
-        float maioraproxSolucao = 0;
+            float CP[ordem];
 
-        //pega o maior
-        for (i = 0; i < ordem; i++)
-        {
-            if (fabs(aproxSolucao[i]) > maioraproxSolucao)
+            for (i = 0; i < ordem; i++)
             {
-                maioraproxSolucao = aproxSolucao[i];
+                CP[i] = fabs(aproxSolucao[i] - matrizAnterior[i]) / maioraproxSolucao;
             }
-        }
 
-        float CP[ordem];
-
-        for (i = 0; i < ordem; i++)
-        {
-            CP[i] = fabs(aproxSolucao[i] - matrizAnterior[i]) / maioraproxSolucao;
-        }
-
-        float maiorCP = 0;
-        for (i = 0; i < ordem; i++)
-        {
-            if (fabs(CP[i]) > maiorCP)
+            float maiorCP = 0;
+            for (i = 0; i < ordem; i++)
             {
-                maiorCP = CP[i];
+                if (fabs(CP[i]) > maiorCP)
+                {
+                    maiorCP = CP[i];
+                }
             }
-        }
 
-        if (maiorCP > precisao)
-        {
-            continua = 1;
-        }
-        else
-        {
-            continua = 0;
-        }
-        printf("\n\n%d\n\n",continua);
-    } while (continua == 1 && iteracoes <= maxIteracao);
+            if (maiorCP > precisao)
+            {
+                continua = 1;
+            }
+            else
+            {
+                continua = 0;
+            }
+        } while (continua == 1 && iteracoes <= maxIteracao);
 
-    printf("\n\n----------------SOLUCAO --------------");
-    printf("\n\nnúmero de iterações: %d\n\n", iteracoes);
-    printf("vetor resultado:\n");
-    for (i = 0; i < ordem; i++)
-    {
-        printf("%f     ", aproxSolucao[i]);
+        printf("\n\nNúmero de iterações: %d\n\n", iteracoes);
+        printf("Vetor solução: ");
+        for (i = 0; i < ordem; i++)
+        {
+            printf("%f     ", aproxSolucao[i]);
+        }
     }
+
 }
 
 //Rotina 10
@@ -840,7 +875,7 @@ void MatrizInversa(int systemOrder, float **matriz, float** matrizInversa){
     
     for (row = 0; row < systemOrder; row++)
     {
-        float* vetorInversaAux = malloc((systemOrder) * sizeof(float *));
+        float* vetorInversaAux = (float*)malloc((systemOrder) * sizeof(float *));
         clearVector(vetorInversaAux, systemOrder);
         
         GaussCompacto(systemOrder, matriz, identidade[row], vetorInversaAux);
@@ -921,12 +956,12 @@ void op6() {
     scanfMatrix(matrixSize, matrixSize, matrix);
     printMatrix(matrix, matrixSize, matrixSize);
     
-    float * vectorIndepent = malloc((matrixSize) * sizeof(float));
+    float * vectorIndepent = (float*)malloc((matrixSize) * sizeof(float));
     clearVector(vectorIndepent, matrixSize);
     scanfVector(matrixSize, vectorIndepent);
     printVector(vectorIndepent, matrixSize);
 
-    float * solutionVector = malloc((matrixSize) * sizeof(float));
+    float * solutionVector = (float*)malloc((matrixSize) * sizeof(float));
     clearVector(solutionVector, matrixSize);
 
 
@@ -976,7 +1011,7 @@ void op8() {
     int Lin, Col, i, c, km;
 	float e;
 	float Termos[i]; //Valores do termo
-	float Inicial[i]; //Suposi��o inicial
+	float Inicial[i]; //Suposiï¿½ï¿½o inicial
 	
 	//Ordem
 	printf("Definir quantidade de linhas.\n");
@@ -987,7 +1022,7 @@ void op8() {
 	float **Matriz = (float**) malloc(Lin * sizeof(float*));
     createMatrix(Matriz, Lin, Col);
     
-	//Inclus�o dos valores na matriz
+	//Inclusï¿½o dos valores na matriz
 	for(i = 0; i < Lin; i++){
 		for(c = 0; c < Col; c++){
 			printf ("\nElemento[%d][%d] = ", i, c);
@@ -1002,14 +1037,14 @@ void op8() {
 	printf("Defina o limite de interacoes\n");
 	scanf("%d", &km);
 	
-	//Inclus�o dos "termos parciais"
+	//Inclusï¿½o dos "termos parciais"
 	printf("\nInserir os Termos\n");
 	for(i = 0; i < Lin; i++){
 		scanf("%f", &Termos[i]); 
 		printf ("\nValor = [%.4f]\n", Termos[i]);
 	}
 	
-	//Inclus�o dos termos iniciais
+	//Inclusï¿½o dos termos iniciais
 	printf("\nInserir os Termos Iniciais\n");
 	for(i = 0; i < Lin; i++){
 		scanf("%f", &Inicial[i]);
@@ -1060,7 +1095,6 @@ void menu() {
 int main() {
     int op;
     do{
-
         menu();
         printf("\n\nDigite sua opcao: ");
         scanf("%d", &op);
