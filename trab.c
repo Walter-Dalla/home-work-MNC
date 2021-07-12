@@ -308,7 +308,148 @@ float nextL(int i, int j, float** matrix, float** solv){
     return (a - sum)/solv[j][j];
 }
 
+// Rotina 8
 
+float validarConvergencia(int Lin, int Col, float ** Matriz){
+    
+	int i, a, c;
+	float numerador[i], denominador[i];
+	float MatrizAb[i][c]; //Valor absoluto
+    
+    //Metodo Linhas
+    
+    //Tornando a matriz em matriz absoluta
+	for(i = 0; i < Lin; i++){
+		for(c = 0; c < Col; c++){
+			MatrizAb[i][c] = fabs(Matriz[i][c]);
+		}
+	}	
+	
+	system("cls");
+	printf("Matriz Absoluta\n");
+
+    for(i = 0; i < Lin; i++){
+		for(c = 0; c < Col; c++){
+			printf("%.2f\t", MatrizAb[i][c]);
+		}
+		printf("\n");
+	}
+	
+	//Limpa
+	for(i = 0; i < Lin; i++){
+        numerador[i] = 0;
+        denominador[i] = 0;
+	}	
+	
+	//Separa��o da diagonal dos valores
+	for(i = 0; i < Lin; i++){
+		for(c = 0; c < Col; c++){
+			if(i == c){
+				denominador[i] = MatrizAb[i][c]; //Separa��o da diagonal dos valores
+			}
+			else {		
+				numerador[i] += MatrizAb[i][c]; //Soma dos valores fora da diagonal
+			}
+		}
+	}
+	
+	float convergencia_l[i], convergencia_c[i];
+
+	//Divis�o
+	for(i = 0; i < Lin; i++){
+		convergencia_l[i] = numerador[i]/denominador[i];
+	}
+	
+	for(a = 0; a < Lin; a++) {
+		if(convergencia_l[a] >= 1){
+		
+			//Metodo Coluna
+			
+			//Limpa
+			for(i = 0; i < Lin; i++){
+				numerador[i] = 0;
+				denominador[i] = 0;
+			}	
+			
+			for(i = 0; i < Lin; i++){
+				for(c = 0; c < Col; c++){
+					if(i == c){
+						denominador[i] = MatrizAb[c][i]; //Separa��o da diagonal dos valores
+					}
+					else {		
+						numerador[i] += MatrizAb[c][i]; //Soma dos valores fora da diagonal
+					}
+				}
+			}
+			
+			for(i = 0; i < Lin; i++){
+				convergencia_c[i] = numerador[i]/denominador[i];
+				if (convergencia_c[i] >= 1){
+					printf("\nConvergencia nao garantida.\n");
+					return 0;
+				}
+			}
+		}
+	}
+	
+	printf("\nConvergencia garantida.\n");
+
+}
+
+float realizarSolucao(int km, float e, int Col, int Lin, float **Matriz, float *Inicial, float *Termos){
+	
+	int parar = 0, k = 0, i = 0, c = 0;
+	float numerador_r[Col], denominador_r[Col], resultado_r[Col], denominador_f, numerador_f, parada;
+	
+	do{
+		printf ("\nInteracao %d\n", k);
+		
+		for(i = 0; i < Lin; i++){
+			numerador_r[i] = 0;
+			denominador_r[i] = 0;
+			resultado_r[i] = 0;
+			numerador_f = 0;
+			denominador_f = 0;
+		}
+	
+		//Formula interativa
+		for(i = 0; i < Lin; i++){
+			for(c = 0; c < Col; c++){
+				if(i == c){
+					denominador_r[i] = Matriz[i][c];
+				}
+				else {		
+					numerador_r[i] -= (Matriz[i][c]*Inicial[c]); //Inser��o dos termos iniciais no sistema
+				}
+			}
+		}
+        
+		for(i = 0; i < Lin; i++){
+			resultado_r[i] = (numerador_r[i] + Termos[i])/denominador_r[i]; //Resultado da intera��o
+			numerador_r[i] = resultado_r[i];
+			float aux =  sqrt(pow(resultado_r[i] - Inicial[i],2 ));
+            if(i == 0 || aux > numerador_f){
+                numerador_f =  aux;
+            }
+            printf("%f\n", numerador_f);
+			Inicial[i] = numerador_r[i];
+			if (denominador_f < fabs(Inicial[i])) denominador_f = fabs(Inicial[i]);
+			
+		}	
+		parada = fabs(numerador_f/denominador_f);
+		printf ("\nParada = [%.4f]", parada);
+		printf ("\n----------------------\n");	
+	
+		k++;
+		
+		if (k == km || parada <= e){
+			parar = 1;
+		}
+	}while (parar != 1);
+}
+
+
+// 9
 void Gauss(int ordem, float **matriz, float *vetorIndependente) {
 
     float multiplicador;
@@ -587,7 +728,51 @@ void op7() {
 }
 
 void op8() {
-
+    int Lin, Col, i, c, km;
+	float e;
+	float Termos[i]; //Valores do termo
+	float Inicial[i]; //Suposi��o inicial
+	
+	//Ordem
+	printf("Definir quantidade de linhas.\n");
+	scanf("%d", &Lin);
+	printf("Definir quantidade de colunas.\n");
+	scanf("%d", &Col);
+	
+	float **Matriz = (float**) malloc(Lin * sizeof(float*));
+    createMatrix(Matriz, Lin, Col);
+    
+	//Inclus�o dos valores na matriz
+	for(i = 0; i < Lin; i++){
+		for(c = 0; c < Col; c++){
+			printf ("\nElemento[%d][%d] = ", i, c);
+			scanf("%f", &Matriz[i][c]);
+		}
+	}
+	
+	printf("\nQual precisao desejada?\n");
+	scanf("%f", &e);
+	
+	
+	printf("Defina o limite de interacoes\n");
+	scanf("%d", &km);
+	
+	//Inclus�o dos "termos parciais"
+	printf("\nInserir os Termos\n");
+	for(i = 0; i < Lin; i++){
+		scanf("%f", &Termos[i]); 
+		printf ("\nValor = [%.4f]\n", Termos[i]);
+	}
+	
+	//Inclus�o dos termos iniciais
+	printf("\nInserir os Termos Iniciais\n");
+	for(i = 0; i < Lin; i++){
+		scanf("%f", &Inicial[i]);
+		printf ("\nValor = [%.4f]\n", Inicial[i]);
+	}
+	
+	validarConvergencia(Lin, Col, Matriz);
+	realizarSolucao(km, e, Col, Lin, Matriz, Inicial, Termos);
 }
 void op9() {
 
