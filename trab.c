@@ -29,7 +29,7 @@ void getMatrixSize(int* matrixRow, int* matrixCol){
     scanf("%i %i", matrixRow, matrixCol);
 }
 
-void clearArray(float* vector, int size) {
+void clearVector(float* vector, int size) {
     int index;
     for (index = 0; index < size; index++)
     {
@@ -56,7 +56,26 @@ void printMatrix(float** matrix, int colSize, int rowSize) {
     }
 }
 
-void printVectorFloat(float* vector, int colSize) {
+void printMatrixWithName(float** matrix, int colSize, int rowSize, char* name) {
+    int col, row;
+
+    for (col = 0; col < colSize; col++)
+    {
+        if(colSize / 2 == col){
+            printf("%s   =", name);
+        }
+        
+        printf("\t");
+
+        for (row = 0; row < rowSize; row++)
+        {
+            printf("%.2f \t", matrix[col][row]);
+        }
+        printf("\n");
+    }
+}
+
+void printVector(float* vector, int colSize) {
     int col;
 
     for (col = 0; col < colSize; col++)
@@ -124,8 +143,9 @@ void scanfVector(int vectorSize, float* vector){
     
     for (col = 0; col < vectorSize; col++)
     {
-        scanf("%i", &input);
-        vector[col] = input;
+        printf("Digite a posicao %i do vetor", col);
+        scanf("%f", &vector[col]);
+        printf("\n");
     }
 }
 
@@ -289,6 +309,62 @@ float nextL(int i, int j, float** matrix, float** solv){
 }
 
 
+void Gauss(int ordem, float **matriz, float *vetorIndependente) {
+
+    float multiplicador;
+    int i, j, k;
+
+    float **matrizAmpliada = (float**) malloc((ordem + 1) * sizeof(float*));
+    createMatrix(matrizAmpliada, ordem, ordem + 1);
+
+    float *vetor = (float*) malloc(ordem * sizeof(float*));
+    clearVector(vetor, ordem);
+
+    for(i = 0; i < ordem; i++) {
+        for(j = 0; j < ordem; j++) {
+            matrizAmpliada[i][j] = matriz[i][j];
+        }
+    }
+
+    for(i = 0; i < ordem; i++) {
+        matrizAmpliada[i][ordem] = vetorIndependente[i];
+    }
+
+    for(i = 0; i < ordem - 1; i++) {
+		if(matrizAmpliada[i][i] == 0.0) {
+			printf("Erro matematico!");
+			exit(0);
+		}
+		for(j = i + 1; j< ordem + 1; j++) {
+			multiplicador = matrizAmpliada[j][i] / matrizAmpliada[i][i];			   
+			for(k = 0; k < ordem + 1; k++) {
+			  	matrizAmpliada[j][k] = matrizAmpliada[j][k] - multiplicador * matrizAmpliada[i][k];
+			}
+		}
+	}
+
+    printf("\nMatriz na sua forma final\n");
+
+    for(int i = 0; i < ordem; i++) {
+        for(int j = 0; j <= ordem ; j++) {
+            printf("%.1f\t", matrizAmpliada[i][j]);
+        }
+        printf("\n");
+    }
+
+	vetorIndependente[ordem - 1] = matrizAmpliada[ordem - 1][ordem] / matrizAmpliada[ordem - 1][ordem - 1];
+	 for(i = ordem - 1; i >= 0; i--) 
+	 {
+		vetorIndependente[i] = matrizAmpliada[i][ordem];
+		for(j = i + 1; j<= ordem; j++) {
+		  	vetorIndependente[i] = vetorIndependente[i] - matrizAmpliada[i][j]*vetorIndependente[j];
+		}
+		vetorIndependente[i] = vetorIndependente[i]/matrizAmpliada[i][i];
+	}
+
+}
+
+
 void GaussCompacto(int systemOrder, float **matrixCoeficiente, float* vetorIndependente, float* vetorSolucao){
     int index;
 
@@ -379,7 +455,7 @@ void MatrizInversa(int systemOrder, float **matriz, float** matrizInversa){
     for (row = 0; row < systemOrder; row++)
     {
         float* vetorInversaAux = malloc((systemOrder) * sizeof(float *));
-        clearArray(vetorInversaAux, systemOrder);
+        clearVector(vetorInversaAux, systemOrder);
         
         GaussCompacto(systemOrder, matriz, identidade[row], vetorInversaAux);
         for (col = 0; col < systemOrder; col++)
@@ -409,9 +485,11 @@ void op1() {
 void op2() {
     
 }
+
 void op3() {
 
 }
+
 void op4() {
 
 }
@@ -424,10 +502,11 @@ void op5() {
 
     printf("\n\nDigite a ordem do sistema: ");
     scanf("%d", &ordem);
+    
     float **matriz = (float**) malloc(ordem * sizeof(float*));
-    float *vetorIndependente = (float*) malloc(ordem * sizeof(float*));
-
     createMatrix(matriz, ordem, ordem);
+
+    float *vetorIndependente = (float*) malloc(ordem * sizeof(float*));
     createVetor(vetorIndependente, ordem);
 
     printf("\n--- Matriz ---");
@@ -445,66 +524,30 @@ void op5() {
 	}
 
     Cholesky(ordem, matriz, vetorIndependente);
-
 }
 
 void op6() {
+    int matrixSize;
+    getMatrixSimetricSize(&matrixSize);
+    printf("%i\n\n", matrixSize);
+    
+    float** matrix = (float **)malloc(matrixSize * sizeof(float *));
+    createMatrix(matrix, matrixSize, matrixSize);
+    scanfMatrix(matrixSize, matrixSize, matrix);
+    printMatrix(matrix, matrixSize, matrixSize);
+    
+    float * vectorIndepent = malloc((matrixSize) * sizeof(float));
+    clearVector(vectorIndepent, matrixSize);
+    scanfVector(matrixSize, vectorIndepent);
+    printVector(vectorIndepent, matrixSize);
 
-}
+    float * solutionVector = malloc((matrixSize) * sizeof(float));
+    clearVector(solutionVector, matrixSize);
 
-void Gauss(int ordem, float **matriz, float *vetorIndependente) {
 
-    float multiplicador;
-    int i, j, k;
-
-    float **matrizAmpliada = (float**) malloc((ordem + 1) * sizeof(float*));
-    createMatrix(matrizAmpliada, ordem, ordem + 1);
-
-    float *vetor = (float*) malloc(ordem * sizeof(float*));
-    createVetor(vetor, ordem);
-
-    for(i = 0; i < ordem; i++) {
-        for(j = 0; j < ordem; j++) {
-            matrizAmpliada[i][j] = matriz[i][j];
-        }
-    }
-
-    for(i = 0; i < ordem; i++) {
-        matrizAmpliada[i][ordem] = vetorIndependente[i];
-    }
-
-    for(i = 0; i < ordem - 1; i++) {
-		if(matrizAmpliada[i][i] == 0.0) {
-			printf("Erro matematico!");
-			exit(0);
-		}
-		for(j = i + 1; j< ordem + 1; j++) {
-			multiplicador = matrizAmpliada[j][i] / matrizAmpliada[i][i];			   
-			for(k = 0; k < ordem + 1; k++) {
-			  	matrizAmpliada[j][k] = matrizAmpliada[j][k] - multiplicador * matrizAmpliada[i][k];
-			}
-		}
-	}
-
-    printf("\nMatriz na sua forma final\n");
-
-    for(int i = 0; i < ordem; i++) {
-        for(int j = 0; j <= ordem ; j++) {
-            printf("%.1f\t", matrizAmpliada[i][j]);
-        }
-        printf("\n");
-    }
-
-	vetorIndependente[ordem - 1] = matrizAmpliada[ordem - 1][ordem] / matrizAmpliada[ordem - 1][ordem - 1];
-	 for(i = ordem - 1; i >= 0; i--) 
-	 {
-		vetorIndependente[i] = matrizAmpliada[i][ordem];
-		for(j = i + 1; j<= ordem; j++) {
-		  	vetorIndependente[i] = vetorIndependente[i] - matrizAmpliada[i][j]*vetorIndependente[j];
-		}
-		vetorIndependente[i] = vetorIndependente[i]/matrizAmpliada[i][i];
-	}
-
+    GaussCompacto(matrixSize, matrix, vectorIndepent, solutionVector);
+    
+    printVector(solutionVector, matrixSize);
 }
 
 void op7() {
@@ -551,11 +594,26 @@ void op9() {
 
 }
 void op10() {
+    int matrixSize;
+    getMatrixSimetricSize(&matrixSize);
+    printf("%i\n\n", matrixSize);
+    
+    float** matrix = (float **)malloc(matrixSize * sizeof(float *));
+    createMatrix(matrix, matrixSize, matrixSize);
+    scanfMatrix(matrixSize, matrixSize, matrix);
+    printMatrix(matrix, matrixSize, matrixSize);
 
+
+    float** matrixInverse = (float **)malloc(matrixSize * sizeof(float *));
+    createMatrix(matrixInverse, matrixSize, matrixSize);
+    
+    MatrizInversa(matrixSize, matrix, matrixInverse);
+    printf("\n\n");
+    printMatrixWithName(matrixInverse, matrixSize, matrixSize, "M-1");
 }
 
 void menu() {
-    printf("--------- MENU ---------");
+    printf("\n--------- MENU ---------");
     printf("\n01 - Rotina Determinante");
     printf("\n02 - Rotina Sistema Triangular Inferior");
     printf("\n03 - Rotina Sistema Triangular Superior");
@@ -571,26 +629,37 @@ void menu() {
 
 
 int main() {
-    menu();
     int op;
-    printf("\n\nDigite sua opcao: ");
-    scanf("%d", &op);
-    while(op < 1 || op > 11) {
-        printf("Opcao invalida! Redigite: ");
-        scanf("%d", &op);
-    }
+    do{
 
-    switch(op) {
-        case 1: op1(); break;
-        case 2: op2(); break;
-        case 3: op3(); break;
-        case 4: op4(); break; 
-        case 5: op5(); break;
-        case 6: op6(); break;
-        case 7: op7(); break;
-        case 8: op8(); break;
-        case 9: op9(); break;
-        case 10: op10(); break;
-        case 11: exit(1); break;
-    }
+        menu();
+        printf("\n\nDigite sua opcao: ");
+        scanf("%d", &op);
+        while(op < 1 || op > 11) {
+            printf("Opcao invalida! Redigite: ");
+            scanf("%d", &op);
+        }
+        printf("\nOp: %i\n", op);
+
+        switch(op) {
+            case 1: op1(); break;
+            case 2: op2(); break;
+            case 3: op3(); break;
+            case 4: op4(); break; 
+            case 5: op5(); break;
+            case 6: op6(); break;
+            case 7: op7(); break;
+            case 8: op8(); break;
+            case 9: op9(); break;
+            case 10: op10(); break;
+            case 11: exit(1); break;
+        }
+
+        printf("\nDeseja realizar outra acao?\n");
+        printf("\n01 - Sim");
+        printf("\n02 - Nao");
+
+        scanf("%d", &op);
+        
+    }while(op == 1);
 }
